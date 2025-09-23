@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     siteName: "Webkitter",
     images: [
       {
-        url: "/og.png", // place og-image.png in public folder
+        url: "/og.png", 
         width: 1200,
         height: 630,
         alt: "Webkitter - Your Personal Web3 Wallet",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Webkitter - Your Personal Web3 Wallet",
     description: "Generate, import, and manage crypto wallets with security and simplicity.",
-    images: ["/og.png"], // same image for Twitter preview
+    images: ["/og.png"], 
   },
 };
 
