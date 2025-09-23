@@ -339,12 +339,12 @@ const WalletGenerator = () => {
     className="flex flex-col gap-8 mt-6"
   >
     <div className="flex md:flex-row flex-col justify-between w-full gap-4 md:items-center">
-      <h2 className="tracking-tighter text-3xl md:text-4xl font-extrabold text-white">
+      <h2 className="tracking-tighter text-3xl md:text-4xl font-extrabold ">
         {pathTypeName} Wallet
       </h2>
       <div className="flex gap-2">
         {wallets.length > 1 && (
-          <Button variant="ghost" onClick={() => setGridView(!gridView)} className="hidden md:block text-white">
+          <Button variant="ghost" onClick={() => setGridView(!gridView)} className="hidden md:block ">
             {gridView ? <Grid2X2 /> : <List />}
           </Button>
         )}
@@ -357,7 +357,7 @@ const WalletGenerator = () => {
               Clear Wallets
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent className="bg-gray-900 text-white border border-purple-500/30">
+          <AlertDialogContent className="bg-gray-900 border border-purple-500/30">
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure you want to delete all wallets?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -365,7 +365,7 @@ const WalletGenerator = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel >Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={() => handleClearWallets()} className="text-red-500">
                 Delete
               </AlertDialogAction>
@@ -457,7 +457,7 @@ const WalletGenerator = () => {
         Your Secret Phrase
       </h2>
       <Button onClick={() => setShowMnemonic(!showMnemonic)} variant="ghost">
-        {showMnemonic ? <ChevronUp className="size-4 text-white" /> : <ChevronDown className="size-4 text-white" />}
+        {showMnemonic ? <ChevronUp className="size-4 text-black " /> : <ChevronDown className="size-4 text-white bg-black w-full" />}
       </Button>
     </div>
 
