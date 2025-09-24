@@ -12,6 +12,13 @@ import { motion } from "framer-motion";
 import bs58 from "bs58";
 import { ethers } from "ethers";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
+
+import {
   ChevronDown,
   ChevronUp,
   Copy,
@@ -34,6 +41,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
+import Link from "next/link";
 
 interface Wallet {
   publicKey: string;
@@ -232,7 +240,7 @@ const WalletGenerator = () => {
         className="flex flex-col my-12"
       >
         <div className="flex flex-col gap-3">
-          <h1 className="tracking-tighter text-4xl md:text-5xl font-extrabold text-gradient bg-clip-text text-transparent">
+          <h1 className="tracking-tighter text-4xl md:text-5xl text-center font-extrabold text-gradient bg-clip-text ">
             Webkitter supports multiple blockchains
           </h1>
           <p className="text-primary/80 font-semibold text-lg text-center md:text-xl">
@@ -377,66 +385,95 @@ const WalletGenerator = () => {
 
     <div className={`grid gap-6 grid-cols-1 ${gridView ? "md:grid-cols-2 lg:grid-cols-3" : ""}`}>
       {wallets.map((wallet: any, index: number) => (
-        <motion.div
-          key={index}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 + index * 0.1, duration: 0.3, ease: "easeInOut" }}
-          className="flex flex-col rounded-2xl border border-purple-500/30 bg-gray-900 shadow-lg hover:shadow-2xl transition-all duration-300"
+<motion.div
+  key={index}
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.3 + index * 0.1, duration: 0.3, ease: "easeInOut" }}
+  className="flex flex-col rounded-2xl border border-purple-500/30 bg-gray-900 shadow-lg hover:shadow-2xl transition-all duration-300"
+>
+  <div className="flex justify-between px-8 py-6 border-b border-purple-500/20">
+    <h3 className="font-bold text-2xl md:text-3xl tracking-tighter text-white">
+      Wallet {index + 1}
+    </h3>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="ghost" className="flex gap-2 items-center text-red-500">
+          <Trash className="size-4" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="bg-gray-900 text-white border border-purple-500/30">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you sure you want to delete this wallet?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your wallet and keys from local storage.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={() => handleDeleteWallet(index)} className="text-red-500">
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  </div>
+
+  <div className="flex flex-col gap-6 px-8 py-6 rounded-b-2xl bg-gray-950">
+    {/* ✅ Tooltip + double click */}
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            className="flex flex-col w-full gap-2 cursor-pointer"
+            onDoubleClick={() => copyToClipboard(wallet.publicKey)}
+          >
+            <span className="text-lg md:text-xl font-bold tracking-tighter text-purple-400">
+              Public Key
+            </span>
+            <p className="text-white font-medium truncate hover:text-purple-300 transition-all duration-300">
+              {wallet.publicKey}
+            </p>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Double-click to copy</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+
+    {/* Private Key */}
+    <div className="flex flex-col w-full gap-2">
+      <span className="text-lg md:text-xl font-bold tracking-tighter text-purple-400">Private Key</span>
+      <div className="flex justify-between w-full items-center gap-2">
+        <p
+          onClick={() => copyToClipboard(wallet.privateKey)}
+          className="text-white font-medium cursor-pointer hover:text-purple-300 transition-all duration-300 truncate"
         >
-          <div className="flex justify-between px-8 py-6 border-b border-purple-500/20">
-            <h3 className="font-bold text-2xl md:text-3xl tracking-tighter text-white">
-              Wallet {index + 1}
-            </h3>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" className="flex gap-2 items-center text-red-500">
-                  <Trash className="size-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="bg-gray-900 text-white border border-purple-500/30">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure you want to delete this wallet?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete your wallet and keys from local storage.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => handleDeleteWallet(index)} className="text-red-500">
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
+          {visiblePrivateKeys[index]
+            ? wallet.privateKey
+            : "•".repeat(wallet.privateKey.length > 50 ? 50 : wallet.privateKey.length)}
+        </p>
+        <Button
+          variant="ghost"
+          onClick={() => togglePrivateKeyVisibility(index)}
+          className="text-white"
+        >
+          {visiblePrivateKeys[index] ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+        </Button>
+      </div>
+    </div>
 
-          <div className="flex flex-col gap-6 px-8 py-6 rounded-b-2xl bg-gray-950">
-            <div className="flex flex-col w-full gap-2 cursor-pointer" onClick={() => copyToClipboard(wallet.publicKey)}>
-              <span className="text-lg md:text-xl font-bold tracking-tighter text-purple-400">Public Key</span>
-              <p className="text-white font-medium truncate hover:text-purple-300 transition-all duration-300">
-                {wallet.publicKey}
-              </p>
-            </div>
+    {/* Open Wallet Button */}
+    <Link href={`/wallet/${index}`}>
+      <Button className="w-full mt-4 bg-purple-600 text-white hover:bg-purple-700">
+        Open Wallet
+      </Button>
+    </Link>
+  </div>
+</motion.div>
 
-            <div className="flex flex-col w-full gap-2">
-              <span className="text-lg md:text-xl font-bold tracking-tighter text-purple-400">Private Key</span>
-              <div className="flex justify-between w-full items-center gap-2">
-                <p
-                  onClick={() => copyToClipboard(wallet.privateKey)}
-                  className="text-white font-medium cursor-pointer hover:text-purple-300 transition-all duration-300 truncate"
-                >
-                  {visiblePrivateKeys[index]
-                    ? wallet.privateKey
-                    : "•".repeat(wallet.privateKey.length > 50 ? 50 : wallet.privateKey.length)}
-                </p>
-                <Button variant="ghost" onClick={() => togglePrivateKeyVisibility(index)} className="text-white">
-                  {visiblePrivateKeys[index] ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+
       ))}
     </div>
   </motion.div>
